@@ -1,0 +1,160 @@
+﻿<Window x:Class="ViewLayerWpfApp.Views.EmployeesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:ViewLayerWpfApp.ViewModels.Employees"
+        xmlns:ControlExt="clr-namespace:ViewLayerWpfApp.Views"
+        mc:Ignorable="d"
+        Title="Сотрудники" Height="462" Width="692.105">
+    <Window.DataContext>
+        <local:EmployeesViewModel/>
+    </Window.DataContext>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding DataLoadingCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <GroupBox x:Name="groupBoxFilters" Header="Фильтры по сотрудникам" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="180" Width="664">
+            <Grid>
+                <GroupBox x:Name="groupBoxName" Header="По имени" HorizontalAlignment="Left" VerticalAlignment="Top" Height="56" Width="165" Margin="0,10,0,0">
+                    <TextBox x:Name="textBoxName" HorizontalAlignment="Left" Height="23" Margin="0,10,-2,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="155" Text="{Binding NameFilter, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="TextChanged">
+                                <i:InvokeCommandAction Command="{Binding NameFilterChangedCommand}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding NameFilterGotFocusCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                </GroupBox>
+                <GroupBox x:Name="groupBoxSurname" Header="По фамилии" HorizontalAlignment="Left" Margin="165,10,0,0" VerticalAlignment="Top" Height="56" Width="156">
+                    <TextBox x:Name="textBoxSurname" HorizontalAlignment="Left" Height="23" Margin="0,10,-2,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="146" Text="{Binding SurnameFilter, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="TextChanged">
+                                <i:InvokeCommandAction Command="{Binding SurnameFilterChangedCommand}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding SurnameFilterGotFocusCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                </GroupBox>
+                <GroupBox x:Name="groupBoxMiddleName" Header="По отчеству" HorizontalAlignment="Left" Margin="326,10,0,0" VerticalAlignment="Top" Height="56" Width="186">
+                    <TextBox x:Name="textBoxMiddleName" HorizontalAlignment="Left" Height="23" Margin="0,10,-2,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="176" Text="{Binding MiddleNameFilter, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="TextChanged">
+                                <i:InvokeCommandAction Command="{Binding MiddleNameFilterChangedCommand}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="GotFocus">
+                                <i:InvokeCommandAction Command="{Binding MiddleNameFilterGotFocusCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                </GroupBox>
+                <GroupBox x:Name="groupBox" Header="Подгрузка данных из базы данных" HorizontalAlignment="Left" Margin="0,66,0,0" VerticalAlignment="Top" Height="92" Width="652" Background="#FFF3F3F3">
+                    <Grid>
+                        <CheckBox x:Name="checkBoxViewFromDB"  HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top" Content="Подгружать данные из базы данных." IsChecked="{Binding LoadFromDb, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                        <Button x:Name="buttonFilterViewFromDB" Content="Отобразить" HorizontalAlignment="Left" Margin="251,3,0,0" VerticalAlignment="Top" Width="295" Command="{Binding FilterViewFromDBCommand}">
+                            <Button.Style>
+                                <Style>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding LoadFromDb}" Value="True">
+                                            <Setter Property="Button.IsEnabled" Value="True"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding LoadFromDb}" Value="False">
+                                            <Setter Property="Button.IsEnabled" Value="False"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding LoadFromDbInProgress}" Value="True">
+                                            <Setter Property="Button.IsEnabled" Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+			            </Button>
+                        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,37,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="33" Width="620">
+                             Подгрузка данных из базы данных 
+                             предполагает заполнение поля фильтра 
+                             и щелчка по кнопке &quot;Отобразить&quot;. 
+                             Если очищены все фильтры, то выведется информация обо всех сотрудниках.
+                        </TextBlock>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </GroupBox>
+        <ControlExt:ExtDataGrid x:Name="dataGrid" HorizontalAlignment="Left" Margin="10,195,0,0" VerticalAlignment="Top" 
+                  Height="164" Width="664" 
+                  ItemsSource="{Binding EmployeeViews, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                  AutoGenerateColumns="False" 
+                  CanUserAddRows="False" CanUserDeleteRows="False"
+                  SelectedItemList="{Binding SelectedEmplViews, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                  CurrentItem="{Binding CurrentEmplView, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MouseDoubleClick="dataGrid_MouseDoubleClick">
+            <ControlExt:ExtDataGrid.Style>
+                <Style TargetType="DataGrid">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LoadFromDbInProgress}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)" 
+                                                        To="DarkGray"
+                                                        AutoReverse="True"
+                                                        Duration="0:0:1"
+                                                        RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding LoadFromDbInProgress}" Value="False">
+                            <Setter Property="Background" Value="{x:Null}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ControlExt:ExtDataGrid.Style>
+            <ControlExt:ExtDataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsAdded}" Value="True">
+                            <Setter Property="Background" Value="LightGray"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsChanged}" Value="True">
+                            <Setter Property="Background" Value="LightGray"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsDeleted}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsFiltered}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ControlExt:ExtDataGrid.RowStyle>
+            <ControlExt:ExtDataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Добавить" Command="{Binding AddEmployeeViewCommand}"/>
+                    <MenuItem Header="Удалить" Command="{Binding DelEmployeeViewCommand}"/>
+                </ContextMenu>
+            </ControlExt:ExtDataGrid.ContextMenu>
+            <ControlExt:ExtDataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsReadOnly="True" Width="Auto"/>
+                <DataGridTextColumn Header="Имя" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                <DataGridTextColumn Header="Отчество" Binding="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                <DataGridTextColumn Header="E-mail" Binding="{Binding EMail, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                <DataGridTextColumn Header="Кол-во проектов" Binding="{Binding EmplProjViews.Count}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Кол-во руководимых проектов" Binding="{Binding LeadProjViews.Count}" IsReadOnly="True"/>
+            </ControlExt:ExtDataGrid.Columns>
+        </ControlExt:ExtDataGrid>
+        <Button x:Name="buttonSaveChanges" Content="Сохранить внесённые изменения" HorizontalAlignment="Left" Margin="270,385,0,0" VerticalAlignment="Top" Width="198" Command="{Binding SaveChangesCommand}" IsEnabled="{Binding IsEmployeeViewsChanged}"/>
+        <Button x:Name="buttonCancelChanges" Content="Отменить внесённые изменения" HorizontalAlignment="Left" Margin="473,385,0,0" VerticalAlignment="Top" Width="201" Command="{Binding CancelChangesCommand}" IsEnabled="{Binding IsEmployeeViewsChanged}"/>
+        <GroupBox x:Name="groupBox1" Header="Редактирование таблицы" HorizontalAlignment="Left" Margin="10,359,0,0" VerticalAlignment="Top" Height="60" Width="255">
+            <Grid HorizontalAlignment="Left" Height="40" Margin="0,0,-2,-11" VerticalAlignment="Top" Width="245">
+                <Button x:Name="buttonAdd" Content="Добавить" HorizontalAlignment="Left" Margin="0,8,0,0" VerticalAlignment="Top" Width="116" Command="{Binding AddEmployeeViewCommand}"/>
+                <Button x:Name="buttonDel" Content="Удалить" HorizontalAlignment="Left" Margin="121,8,0,0" VerticalAlignment="Top" Width="114" Command="{Binding DelEmployeeViewCommand}"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>

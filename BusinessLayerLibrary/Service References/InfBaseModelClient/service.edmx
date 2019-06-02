@@ -1,0 +1,88 @@
+﻿<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+  <edmx:DataServices m:DataServiceVersion="1.0" m:MaxDataServiceVersion="3.0" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
+    <Schema Namespace="DataLayerWcfApp.DataModel" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <EntityType Name="Employee">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" p6:StoreGeneratedPattern="Identity" xmlns:p6="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+        <Property Name="Name" Type="Edm.String" MaxLength="50" FixedLength="false" Unicode="true" />
+        <Property Name="Surname" Type="Edm.String" MaxLength="50" FixedLength="false" Unicode="true" />
+        <Property Name="MiddleName" Type="Edm.String" MaxLength="50" FixedLength="false" Unicode="true" />
+        <Property Name="EMail" Type="Edm.String" MaxLength="50" FixedLength="false" Unicode="true" />
+        <NavigationProperty Name="LeadProjects" Relationship="DataLayerWcfApp.DataModel.Project_Leader" ToRole="Project_Leader_Source" FromRole="Project_Leader_Target" />
+        <NavigationProperty Name="Projects" Relationship="DataLayerWcfApp.DataModel.Project_Employees" ToRole="Project_Employees_Source" FromRole="Project_Employees_Target" />
+      </EntityType>
+      <EntityType Name="Project">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.Int32" Nullable="false" p6:StoreGeneratedPattern="Identity" xmlns:p6="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+        <Property Name="ProjName" Type="Edm.String" MaxLength="50" FixedLength="false" Unicode="true" />
+        <Property Name="OrgOrderName" Type="Edm.String" MaxLength="50" FixedLength="false" Unicode="true" />
+        <Property Name="OrgExecuteName" Type="Edm.String" MaxLength="50" FixedLength="false" Unicode="true" />
+        <Property Name="DateProjExecuteBegin" Type="Edm.DateTime" />
+        <Property Name="DateProjExecuteEnd" Type="Edm.DateTime" />
+        <Property Name="Priority" Type="Edm.Int32" />
+        <Property Name="Comment" Type="Edm.String" MaxLength="100" FixedLength="false" Unicode="true" />
+        <Property Name="LeaderId" Type="Edm.Int32" />
+        <NavigationProperty Name="Employees" Relationship="DataLayerWcfApp.DataModel.Project_Employees" ToRole="Project_Employees_Target" FromRole="Project_Employees_Source" />
+        <NavigationProperty Name="Leader" Relationship="DataLayerWcfApp.DataModel.Project_Leader" ToRole="Project_Leader_Target" FromRole="Project_Leader_Source" />
+      </EntityType>
+      <EntityType Name="IdentityRole">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+        <Property Name="Name" Type="Edm.String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+      </EntityType>
+      <EntityType Name="IdentityUser">
+        <Key>
+          <PropertyRef Name="Id" />
+        </Key>
+        <Property Name="Id" Type="Edm.String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+        <Property Name="Email" Type="Edm.String" MaxLength="256" FixedLength="false" Unicode="true" />
+        <Property Name="EmailConfirmed" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="PasswordHash" Type="Edm.String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        <Property Name="SecurityStamp" Type="Edm.String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        <Property Name="PhoneNumber" Type="Edm.String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        <Property Name="PhoneNumberConfirmed" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="TwoFactorEnabled" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="LockoutEndDateUtc" Type="Edm.DateTime" />
+        <Property Name="LockoutEnabled" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="AccessFailedCount" Type="Edm.Int32" Nullable="false" />
+        <Property Name="UserName" Type="Edm.String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+      </EntityType>
+      <Association Name="Project_Leader">
+        <End Type="DataLayerWcfApp.DataModel.Employee" Role="Project_Leader_Target" Multiplicity="0..1" />
+        <End Type="DataLayerWcfApp.DataModel.Project" Role="Project_Leader_Source" Multiplicity="*" />
+        <ReferentialConstraint>
+          <Principal Role="Project_Leader_Target">
+            <PropertyRef Name="Id" />
+          </Principal>
+          <Dependent Role="Project_Leader_Source">
+            <PropertyRef Name="LeaderId" />
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="Project_Employees">
+        <End Type="DataLayerWcfApp.DataModel.Project" Role="Project_Employees_Source" Multiplicity="*" />
+        <End Type="DataLayerWcfApp.DataModel.Employee" Role="Project_Employees_Target" Multiplicity="*" />
+      </Association>
+      <EntityContainer Name="InfBaseModel" m:IsDefaultEntityContainer="true">
+        <EntitySet Name="Employees" EntityType="DataLayerWcfApp.DataModel.Employee" />
+        <EntitySet Name="Projects" EntityType="DataLayerWcfApp.DataModel.Project" />
+        <EntitySet Name="Roles" EntityType="DataLayerWcfApp.DataModel.IdentityRole" />
+        <EntitySet Name="Users" EntityType="DataLayerWcfApp.DataModel.IdentityUser" />
+        <AssociationSet Name="Project_Leader" Association="DataLayerWcfApp.DataModel.Project_Leader">
+          <End Role="Project_Leader_Target" EntitySet="Employees" />
+          <End Role="Project_Leader_Source" EntitySet="Projects" />
+        </AssociationSet>
+        <AssociationSet Name="Project_Employees" Association="DataLayerWcfApp.DataModel.Project_Employees">
+          <End Role="Project_Employees_Target" EntitySet="Employees" />
+          <End Role="Project_Employees_Source" EntitySet="Projects" />
+        </AssociationSet>
+      </EntityContainer>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
